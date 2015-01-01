@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+#define FPATH_LIMIT 500
+#define MAX_ROWS 1000
 
 char* read(char inputloc[]);
-char* convert(char input[]);
+char* convertscr(char input[]);
 int write(char outputloc[], char data[]);
 int main();
 
@@ -18,54 +22,53 @@ int main(){
 	printf("\e[0;31m║  ╚╗  ║      ╔╗ ║  ╔╝  \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ║      ║     ║  ╚╗║ ║  ╚╗ ║\n");
 	printf("\e[0;31m║   ╚  ╚════╝ ╚╝ ╚══╝   \e[0;35m          ║    ╚════╝       \e[0;32m ╚════╝ ║      ╚════ ║   ╚╝ ║   ╚ ╚════╝\n");
 	printf("\n");
-	printf("\e[0;35m                                  B    Y\n");
+	printf("\e[0;35m                                                B    Y\n");
 	printf("\n");
-	printf("\e[0;35m                     K  K    A     V     V EEEEE X   X\n");
-	printf("\e[0;35m                     K K    A A    V     V E      X X\n");
-	printf("\e[0;35m                     KK    AAAAA    V   V  EEE     X\n");
-	printf("\e[0;35m                     K K  A     A    V V   E      X X\n");
-	printf("\e[0;35m                     K  K A     A     V    EEEEE X   X\n\n\n\e[0m");
+	printf("\e[0;35m                                     K  K    A     V     V EEEEE X   X\n");
+	printf("\e[0;35m                                     K K    A A    V     V E      X X\n");
+	printf("\e[0;35m                                     KK    AAAAA    V   V  EEE     X\n");
+	printf("\e[0;35m                                     K K  A     A    V V   E      X X\n");
+	printf("\e[0;35m                                     K  K A     A     V    EEEEE X   X\n\n\n\e[0m");
 
 	printf("Please enter the path to the rc.d script you want to translate:\n");
-	scanf("%c", &inlocation);
+	scanf("%24[^\n]", &inlocation);
+	getchar();
 	printf("Now, please enter a path for the output file:\n");
-	scanf("%c", &outlocation);
-	read("/home/kavex/Desktop/test.txt");
+	scanf("%24[^\n]", &outlocation);
+	read(inlocation);
 	write(outlocation, "test");
-	return(0);
-};
+	return 0;
+}
 
-char* read(char inputloc[1000]){  // This function currently reads from a file and stores it in a virable. ATM it only reads parts of the last three lines
+char* read(char inputloc[FPATH_LIMIT]){  // This function currently reads from a file and stores it in a virable. ATM it only reads parts of the last three lines
 	FILE *fptr;
-	char string1[1000];
-	char string2[1000];
-	char string3[1000];
-	char line[1000];
+	int lines = 0;
+	char c;
 	fptr = fopen(inputloc, "r");
-	int cur_ln = 0;
-	while(fgets(line, 1000, fptr) != NULL){
-		if (cur_ln == 2) {
-			sscanf (line, "%s %s %s \n", string1, string2, string3);
-			break;
+	if(fptr == NULL){
+		fputs(stderr, ""Error: Opening specified File returned NULL. Unable to open File."");
+		return 1;
+	}
+	for(c = getc(fptr); c != EOF; c = getc(fptr)){
+		if( c == '\n'){
+			lines = lines + 1;
 		}
-		cur_ln++;
 	}
-	/*
-	char script[1000];
-	fgets(script, 1000, fptr);
-	printf("%s", script);
-	while(fgets(script, 1000, fptr)) {
- 		printf("%s", script);
-	}
-	*/
 	fclose(fptr);
-	printf("%s\n%s\n%s", string1, string2, string3);
-	return "test";
-};
+	printf("Counted %d lines.", lines);
+	return 0;
+	char** data[MAX_ROWS][lines];
+	data = malloc(MAX_ROWS * lines * sizeof(*data));
+	if(!data){
+		fputs(stderr, ""Error: Unable to allocate memory."");
+		return 1;
+	}
+	for(r = 0; )
+}
 
 int write(char outputloc[1000], char data[1000]){ // This function works as intended, it writes a string to a file
 	FILE *fptr;
 	fptr = fopen(outputloc, "w");
 	fprintf(fptr, data);
 	fclose(fptr);
-};
+}

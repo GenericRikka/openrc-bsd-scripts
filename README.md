@@ -18,3 +18,6 @@ No matter if you  choose 1, or 2, if the file you want to add already exist as b
 
 <h2>What to do if i just finished converting a scriptset for a whole package?</h2>
 First of all: Awesome work! The best place to store the files in, would be this repo and even better: The original package maintainers, of the package to which the service scripts belongs to, so go to their repository aswell and try submitting your work. If they accept, the load to maintain the scripts won't be on us, but on the original maintainers, which would be better due to them having a better knowledge of future updates.
+
+<h2>Issues</h2>
+Opening issues in this repository is not only meant to report bugs, or broken code. Here, issues are also used to provide feedback about the structure of the repo, permissions, etc. If i setup some permissions wrong and am therefor stoping you from doing your work, you are always welcome to file an issue and i will take a look at it.

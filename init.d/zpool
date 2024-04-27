@@ -1,0 +1,34 @@
+#!/sbin/openrc-run
+
+# PROVIDE: zpool
+# REQUIRE: hostid disks
+# BEFORE: mountcritlocal
+# KEYWORD: nojail
+
+name="zpool"
+description="Import ZPOOLs"
+#required_modules="zfs"
+
+depend(){
+	need hostid
+	need devd
+	use mountlocal
+}
+
+start()
+{
+	local cachefile
+
+	for cachefile in /etc/zfs/zpool.cache /boot/zfs/zpool.cache; do
+		if [ -r $cachefile ]; then
+			zpool import -c $cachefile -a -N
+			if [ $? -ne 0 ]; then
+				echo "Import of zpool cache ${cachefile} failed," \
+				    "will retry after root mount hold release"
+				root_hold_wait
+				zpool import -c $cachefile -a -N
+			fi
+			break
+		fi
+	done
+}

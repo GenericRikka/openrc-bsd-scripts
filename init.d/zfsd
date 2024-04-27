@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+# PROVIDE: zfsd
+# REQUIRE: devd zfs
+# KEYWORD: nojail shutdown
+
+name="zfsd"
+rcvar="zfsd_enable"
+command="/usr/sbin/${name}"
+depend(){
+	need devd
+	need zfs
+}
+

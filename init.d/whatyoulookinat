@@ -2,5 +2,7 @@ Yes, this is my plan for this branch. I want all of the different Dummy dependen
 Wish me luck, this is going to take a while. But if this is done, we would theoretically be done with "translating" the base systems rc.d script, over to openrc.
 I will continue to translate/rewrite other scripts after i am done with this, or maybe even while i am working on this branch, depending on how disciplined i am.
 Also, i will probably write a little diary about development on this branch in here, since this is going to be a larger task and will probably cost me some nerve >°:/
+Oh and, i am trying to satisfy the dummy dependencies, because for some reason i am not able to get SLiM to work and i do not know why. It says unable to execute login command
+and i suspect that it does so, because .xinitrc was not able to load before SLiM got started, idk
 
 -Rikka

@@ -1,0 +1,6 @@
+Yes, this is my plan for this branch. I want all of the different Dummy dependencys to be satisfied.
+Wish me luck, this is going to take a while. But if this is done, we would theoretically be done with "translating" the base systems rc.d script, over to openrc.
+I will continue to translate/rewrite other scripts after i am done with this, or maybe even while i am working on this branch, depending on how disciplined i am.
+Also, i will probably write a little diary about development on this branch in here, since this is going to be a larger task and will probably cost me some nerve >°:/
+
+-Rikka

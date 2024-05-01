@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+name="slim"
+description="Starts slim login screen"
+command="/usr/local/bin/slim"
+
+depend(){
+	need localmount
+	need devd
+	need dbus
+	after kldload
+	#need LOGIN
+}

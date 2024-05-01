@@ -1,0 +1,21 @@
+#!/sbin/operc-run
+#
+#
+
+# PROVIDE: DAEMON
+# REQUIRE: NETWORKING SERVERS
+
+#	This is a dummy dependency, to ensure that general purpose daemons
+#	are run _after_ the above are.
+name="DAEMON"
+description="Dummy dependency to ensure that general purpose daemons are run after NETWORKING and SERVERS were satisfied."
+
+depend(){
+	provide DAEMON
+	want NETWORKING
+	want SERVERS
+}
+
+start(){
+	#Do nothing, be a dummy
+}

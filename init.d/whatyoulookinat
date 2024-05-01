@@ -6,3 +6,26 @@ Oh and, i am trying to satisfy the dummy dependencies, because for some reason i
 and i suspect that it does so, because .xinitrc was not able to load before SLiM got started, idk
 
 -Rikka
+
+
+============[Scrits to add]===========================================================================
+SERVERS{
+	sysvipc [DONE]
+	linux [DONE]
+	ldconfig [DONE]
+	watchdogd [DONE]
+}
+
+NETWORKING{
+	netwait
+	netoptions
+	routing
+	ppp
+	stf
+	defaultroute
+	route6d
+	resolv
+	bridge
+	static_arp
+	static_ndp
+}

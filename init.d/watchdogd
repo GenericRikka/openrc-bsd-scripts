@@ -30,7 +30,7 @@
 # REQUIRE: FILESYSTEMS syslogd
 # KEYWORD: nojail shutdown
 
-. /etc/rc.subr
+#. /etc/rc.subr
 
 name="watchdogd"
 description="Watchdog daemon"

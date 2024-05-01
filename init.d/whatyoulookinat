@@ -17,15 +17,18 @@ SERVERS{
 }
 
 NETWORKING{
-	netwait
-	netoptions
-	routing
-	ppp
-	stf
-	defaultroute
-	route6d
-	resolv
-	bridge
-	static_arp
-	static_ndp
+	netwait [DONE]
+	netoptions [DONE]
+	routing [DONE]
+	ppp [DONE]
+	stf [DONE]
+	defaultroute [DONE]
+	route6d [DONE]
+	resolv [DONE]
+	bridge [DONE]
+	static_arp [DONE]
+	static_ndp [DONE]
 }
+
+--> Scripts are translated. Now there are still tests to run and occuring errors to fix.
+

@@ -29,7 +29,7 @@
 # REQUIRE: hostid
 # KEYWORD: nojailvnet
 
-. /etc/rc.subr
+#. /etc/rc.subr
 . /etc/network.subr
 
 name="netif"

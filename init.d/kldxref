@@ -7,7 +7,7 @@
 # BEFORE:  netif
 # KEYWORD: nojail
 
-. /etc/rc.subr
+#. /etc/rc.subr
 
 name="kldxref"
 description="Generate hints for the kernel loader"

@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+. /etc/conf.d/kldload/kldload.config
+
+name="kldload"
+description="Dynamically loads and unloads Kernel modules specified in configuration file"
+#command="/sbin/kldload"
+#command_args=$kld_list
+
+depend(){
+	need localmount
+	need FILESYSTEMS
+}
+
+start(){
+	kldload $kld_list
+}
+
+stop(){
+	kldunload $kld_list
+}

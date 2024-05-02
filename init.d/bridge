@@ -28,8 +28,9 @@
 # REQUIRE: netif ppp stf
 # KEYWORD: nojail
 
-#. /etc/rc.subr
+. /etc/rc.subr
 . /etc/network.subr
+. /etc/netrc.conf
 
 name="bridge"
 description="Network bridge setup"

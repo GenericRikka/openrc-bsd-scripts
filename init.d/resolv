@@ -30,7 +30,8 @@
 # REQUIRE: netif FILESYSTEMS
 # KEYWORD: nojail
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 name="resolv"
 description="Create /etc/resolv.conf from kenv"

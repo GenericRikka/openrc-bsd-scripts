@@ -5,8 +5,9 @@
 # REQUIRE: netif
 # KEYWORD: nojail
 
-#. /etc/rc.subr
+. /etc/rc.subr
 . /etc/network.subr
+. /etc/netrc.conf
 
 name="stf"
 description="6to4 tunnel interface"

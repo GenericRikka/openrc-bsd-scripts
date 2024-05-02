@@ -6,7 +6,8 @@
 # REQUIRE: FILESYSTEMS
 # BEFORE:  DAEMON
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 name="ldconfig"
 description="Configure the shared library cache"

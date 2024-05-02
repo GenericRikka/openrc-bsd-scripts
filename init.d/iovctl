@@ -5,7 +5,8 @@
 # PROVIDE: iovctl
 # REQUIRE: FILESYSTEMS sysctl
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 name="iovctl"
 command="/usr/sbin/iovctl"

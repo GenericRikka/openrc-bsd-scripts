@@ -7,8 +7,9 @@
 # BEFORE: netif
 # KEYWORD: nojailvnet
 
-#. /etc/rc.subr
+. /etc/rc.subr
 . /etc/network.subr
+. /etc/netrc.conf
 
 name="netoptions"
 description="Network options setup"

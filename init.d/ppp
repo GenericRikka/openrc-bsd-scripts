@@ -7,6 +7,7 @@
 # KEYWORD: nojail
 
 . /etc/rc.subr
+. /etc/netrc.conf
 
 name="ppp"
 description="Point to Point Protocol"

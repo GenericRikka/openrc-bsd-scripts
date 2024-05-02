@@ -6,7 +6,8 @@
 # REQUIRE: zfsbe
 # BEFORE: FILESYSTEMS var
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 export PATH

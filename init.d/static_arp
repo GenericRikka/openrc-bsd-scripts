@@ -31,8 +31,9 @@
 # REQUIRE: netif
 # KEYWORD: nojailvnet
 
-#. /etc/rc.subr
+. /etc/rc.subr
 . /etc/network.subr
+. /etc/netrc.conf
 
 name="static_arp"
 description="Static ARP Configuration"

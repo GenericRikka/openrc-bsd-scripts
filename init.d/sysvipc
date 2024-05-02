@@ -6,7 +6,8 @@
 # REQUIRE: kldxref
 # KEYWORD: nojail
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 name="sysvipc"
 description="Load SysV IPC modules"

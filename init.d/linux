@@ -6,7 +6,8 @@
 # REQUIRE: kldxref zfs
 # KEYWORD: nojail
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 name="linux"
 description="Enable Linux ABI"

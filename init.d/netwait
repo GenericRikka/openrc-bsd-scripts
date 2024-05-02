@@ -16,14 +16,16 @@
 # Either or both of the wait lists can be used (at least one must be
 # non-empty if netwait is enabled).
 
-#. /etc/rc.subr
+. /etc/rc.subr
+. /etc/netrc.conf
 
 name="netwait"
 description="Wait for network devices or the network being up"
 
 depend(){
 	provide netwait
-	need devd ipfw pf routing
+	need devd ipfw routing
+	use pf
 }
 
 stop(){

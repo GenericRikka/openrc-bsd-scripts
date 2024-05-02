@@ -10,6 +10,7 @@
 
 . /etc/rc.subr
 . /etc/network.subr
+. /etc/netrc.conf
 
 name="routing"
 description="Routing setup"
@@ -450,5 +451,3 @@ options_inet6()
 	[ -n "${_ropts_initdone}" ] && echo '.'
 }
 
-load_rc_config $name
-run_rc_command "$@"

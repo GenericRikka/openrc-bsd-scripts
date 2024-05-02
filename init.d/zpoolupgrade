@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+# PROVIDE: zpoolupgrade
+# REQUIRE: zpool
+# BEFORE: mountcritlocal
+# KEYWORD: firstboot nojail
+
+name="zpoolupgrade"
+description="Upgrade zpool version"
+
+depend(){
+	need zpool
+	use localmount
+}
+
+start()
+{
+	local pool
+
+	for pool in ${zpool_upgrade}; do
+		zpool upgrade $pool
+	done
+}

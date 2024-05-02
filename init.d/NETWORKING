@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+#
+#
+
+# PROVIDE: NETWORKING NETWORK
+# REQUIRE: netif netwait netoptions routing ppp ipfw stf
+# REQUIRE: defaultroute route6d resolv bridge
+# REQUIRE: static_arp static_ndp
+
+#	This is a dummy dependency, for services which require networking
+#	to be operational before starting.
+
+name="NETWORKING"
+description="This is a dummy dependency, for services which require networking to be operational before starting."
+
+depend(){
+	provide NETWORKING
+	provide NETWORK
+	want netif netwait netoptions routing
+	want ppp ipfw stf defaultroute
+	want route6d resolv bridge
+	want static_arp static_ndp
+}
+
+start(){
+	#Do nothing, be a dummy
+}

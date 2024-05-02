@@ -1,0 +1,31 @@
+#!/sbin/openrc-run
+#
+#
+
+# PROVIDE: route6d
+# REQUIRE: netif routing
+# KEYWORD: nojailvnet
+
+. /etc/rc.subr
+. /etc/netrc.conf
+
+name="route6d"
+description="RIP6 routing daemon"
+
+depend(){
+	provide route6d
+	need netif routing
+}
+
+start(){
+	#Nothing to start
+}
+
+stop(){
+	#Nothing to stop
+}
+
+set_rcvar_obsolete ipv6_router_enable route6d_enable
+set_rcvar_obsolete ipv6_router route6d_program
+set_rcvar_obsolete ipv6_router_flags route6d_flags
+

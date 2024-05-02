@@ -31,6 +31,7 @@
 
 . /etc/rc.subr
 . /etc/network.subr
+. /etc/netrc.conf
 
 name="netif"
 description="Network interface setup"

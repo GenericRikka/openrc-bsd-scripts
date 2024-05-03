@@ -1,0 +1,1 @@
+On this branch, i want to create a tool to automatically convert rc.d scripts to openrc, since the conversion follows a simple algorithm, it should not be too difficult to implement and will help me to get used with C again, so here goes nothing

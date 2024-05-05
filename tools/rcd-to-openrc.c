@@ -36,7 +36,7 @@ int main(){
 	printf("Now, please enter a path for the output file:\n");
 	scanf("%24[^\n]", &outlocation);
 	read(inlocation);
-	write(outlocation, "test");
+        //write(outlocation, "test");
 	return 0;
 }
 
@@ -46,24 +46,35 @@ char* read(char inputloc[FPATH_LIMIT]){  // This function currently reads from a
 	char c;
 	fptr = fopen(inputloc, "r");
 	if(fptr == NULL){
-		fputs(stderr, ""Error: Opening specified File returned NULL. Unable to open File."");
-		return 1;
+		printf("Error: Opening specified File returned NULL. Unable to open File.");
+		exit;
 	}
 	for(c = getc(fptr); c != EOF; c = getc(fptr)){
 		if( c == '\n'){
 			lines = lines + 1;
 		}
 	}
-	fclose(fptr);
 	printf("Counted %d lines.", lines);
-	return 0;
-	char** data[MAX_ROWS][lines];
-	data = malloc(MAX_ROWS * lines * sizeof(*data));
-	if(!data){
-		fputs(stderr, ""Error: Unable to allocate memory."");
-		return 1;
+	exit;
+	//char **data[][];
+	char data[MAX_ROWS][lines]; 
+	int l;
+	int r;
+	for(l = 0; l < lines; l++){
+		for(r = 0; r != '\n'; r++){
+			data[r][l] = (char)fgetc(fptr);
+		}
 	}
-	for(r = 0; )
+
+	//Debug step
+	for(l = 0; l < lines; l++){
+		for(r = 0; r < MAX_ROWS; r++){
+			printf("%c", data[r][l]);
+		}
+		printf("\n");
+	}
+
+	fclose(fptr);
 }
 
 int write(char outputloc[1000], char data[1000]){ // This function works as intended, it writes a string to a file

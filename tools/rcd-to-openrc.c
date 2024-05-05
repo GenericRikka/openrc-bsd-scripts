@@ -62,10 +62,9 @@ char* read(char inputloc[FPATH_LIMIT]){  // This function currently reads from a
 	int r;
 	for(l = 0; l < lines; l++){
 		for(r = 0; r != '\n'; r++){
-			data[r][l] = (char)fgetc(fptr);
+			data[r][l] = (char)fgetc(fptr); //returns unsigned char, probably need to convert to char
 		}
 	}
-
 	//Debug step
 	for(l = 0; l < lines; l++){
 		for(r = 0; r < MAX_ROWS; r++){

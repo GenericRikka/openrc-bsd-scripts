@@ -40,7 +40,7 @@ int main(){
 	return 0;
 }
 
-char* read(char inputloc[FPATH_LIMIT]){  // This function currently reads from a file and stores it in a virable. ATM it only reads parts of the last three lines
+char* read(char inputloc[FPATH_LIMIT]){  // This function currently reads from a file and stores it in a virable. ATM it only spits out unreadable characters
 	FILE *fptr;
 	int lines = 0;
 	char c;

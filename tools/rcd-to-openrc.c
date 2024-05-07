@@ -50,7 +50,7 @@ int read(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){
 	char *data;
 	long size;
 
-	printf("Read initialized.");
+	//printf("Read initialized.");
 	file = fopen(inputloc, "rb");
 	if(! file) fputs("[ERROR] Unable to open file.",stderr),perror(inputloc),printf("Unable to open file.\n"),exit(1);
 	fseek(file, 0L, SEEK_END);
@@ -62,25 +62,27 @@ int read(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){
 	if(1 != fread(data, size, 1, file))
 		fclose(file),free(data),fputs("[ERROR] Read Operation from file failed.",stderr),perror("read fail"),printf("[ERROR] Read operation failed\n"),exit(1);
 	fread(data, size, 1, file);
-	int i;
-	printf("Read:\n");
-	for(i = 0; i <= size; i++) printf("%c",data[i]);
-	convert(&data, size);
 	fclose(file);
-	write(outputloc, &data);
+	int i;
+	//printf("Read:\n");
+	//for(i = 0; i <= size; i++) printf("%c",data[i]);
+	convert(data, size);
+	write(outputloc,data);
 	free(data);
 	return(0);
 }
 
 int convert(char* data, long size){ 
 	int i;
-	printf("Recieved:\n");
-	for(i = 0; i <= size; i++) printf("%c",data[i]);
+	//printf("Recieved:\n");
+	//for(i = 0; i <= size; i++) printf("%c",data[i]);
+	//printf("%s",data);
 	long a = 10;
 	long b = 300;
-	delete(a, b, &data);
-	printf("Edited:\n");
-	for(i = 0; i <= size; i++) printf("%c",data[i]);
+	delete(a, b, data);
+	//printf("Edited:\n");
+	//for(i = 0; i <= size; i++) printf("%c",data[i]);
+	//printf("%s",data);
 	return(0);
 }	
 
@@ -88,7 +90,7 @@ int delete(long a, long b, char* data){
 	long size = strlen(data);
 	long d = b - a;
 	char *buffer;
-	buffer = malloc(sizeof(data)); 
+	buffer = malloc(sizeof(char)*size); 
 	int i;
 	for(i = 0; i < a; i++){
 		buffer[i] = data[i];

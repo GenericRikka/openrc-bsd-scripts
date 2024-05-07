@@ -6,12 +6,12 @@
 #define MAX_ROWS 1000 /* maximum of rows to be expected in the script */
 
 int read(char inputloc[], char outputloc[]); /* a small function to read from a file and then call another function with read data as argument */
-int convert(char *data, long size); /* main thread during the conversion of the script. It calls sub functions to modify different parts */
-int write(char outputloc[], char *data); /* a small function to write to a file */
-int delete(long a, long b, char *data); /* a function that deletes the section from a to b in data. one of the functions called by convert */
-int extract(char pattern[], char delim[], char *data); /* a function which extracts the value found after pattern and before delim from data. one of the functions called by convert */
-int insert(char insert[], long pos, char *data); /* this function inserts insert at pos in data. one of the functions called by convert */
-int replace(char target[], char phrase[], char *data); /* a function to replace target with phrase inside data. one of the functions called by convert */
+int convert(char* data, long size); /* main thread during the conversion of the script. It calls sub functions to modify different parts */
+int write(char outputloc[], char* data); /* a small function to write to a file */
+int delete(long a, long b, char* data); /* a function that deletes the section from a to b in data. one of the functions called by convert */
+int extract(char pattern[], char delim[], char* data); /* a function which extracts the value found after pattern and before delim from data. one of the functions called by convert */
+int insert(char insert[], long pos, char* data); /* this function inserts insert at pos in data. one of the functions called by convert */
+int replace(char target[], char phrase[], char* data); /* a function to replace target with phrase inside data. one of the functions called by convert */
 int main();
 
 int main(){
@@ -72,7 +72,7 @@ int read(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){
 	return(0);
 }
 
-int convert(char *data, long size){ 
+int convert(char* data, long size){ 
 	int i;
 	printf("Recieved:\n");
 	for(i = 0; i <= size; i++) printf("%c",data[i]);
@@ -84,7 +84,7 @@ int convert(char *data, long size){
 	return(0);
 }	
 
-int delete(long a, long b, char *data){
+int delete(long a, long b, char* data){
 	long size = strlen(data);
 	long d = b - a;
 	char *buffer;
@@ -96,12 +96,12 @@ int delete(long a, long b, char *data){
 	for(i = b; i < size; i++){
 		buffer[i - d] = data[i];
 	}
-	for(i = 0; i < size+1; i++) buffer[i] = data[i];
+	for(i = 0; i < size+1; i++) data[i] = buffer[i];
 	free(buffer);
 	return(0);
 }
 
-int write(char outputloc[1000], char *data){ // This function works as intended, it writes a string to a file
+int write(char outputloc[1000], char* data){ // This function works as intended, it writes a string to a file
 	FILE *fptr;
 	fptr = fopen(outputloc, "w");
 	fprintf(fptr, data);

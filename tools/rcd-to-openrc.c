@@ -12,7 +12,19 @@ int delete(long a, long b, char* data); /* a function that deletes the section f
 int extract(char* pattern, char* delim, char* data, char* extract); /* a function which extracts the value found after pattern and before delim from data and saves it to extract. one of the functions called by convert */
 int insert(char* insert, long pos, char* data); /* this function inserts insert at pos in data. one of the functions called by convert */
 int replace(char target[], char phrase[], char* data); /* a function to replace target with phrase inside data. one of the functions called by convert */
+int cmdextract(char* data, char* extractpre, char* extractpost);
+char* strrev(char* str);
 int main();
+
+
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
+!!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
+!!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
+!!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
+!!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
 
 int main(){
 	/* Do some tasks */
@@ -116,6 +128,15 @@ int convert(char* data, long size){
 	replace(target,phrase,data);
 	free(target);
 	free(phrase);*/
+
+	char* extractpre;
+	char* extractpost;
+	extractpre = malloc(sizeof(char)*40);
+	extractpost = malloc(sizeof(char)*40);
+	cmdextract(data,extractpre,extractpost);
+	printf("Function name: %s\nFunction command: %s",extractpre,extractpost);
+	free(extractpre);
+	free(extractpost);
 	return(0);
 }	
 
@@ -145,6 +166,21 @@ int extract(char* pattern, char* delim, char* data, char* extract){ //Tested. Wo
 	long l;
 	for(l = psz; result1[l]!= delim[0]; l++) extract[l-psz] = result1[l];
 	printf("%s",extract);
+	return(0);
+}
+
+int cmdextract(char* data, char* extractpre, char* extractpost){ //Tested. Works.
+	//For the *_cmd="command" values an extra function is needed to extract both the * value and the command values
+	char pattern[] = "_cmd=\"";
+	char delimpre[] = "\n";
+	char delimpost[] = "\"";
+	char* ptr;
+	ptr = strstr(data,pattern);
+	long l;
+	for(l = 0; ptr[l] != delimpre[0]; l--) extractpre[l * -1] = ptr[l];
+	long m;
+	strrev(extractpre);
+	for(m = 0; ptr[m + strlen(pattern)] != delimpost[0]; m++) extractpost[m] = ptr[m + strlen(pattern)];
 	return(0);
 }
 
@@ -180,3 +216,19 @@ int write(char outputloc[1000], char* data){ //Tested. Works.
 	fclose(fptr);
 	return(0);
 }
+
+char* strrev(char* str) //Reverses a string
+{
+      char *p1, *p2;
+
+      if (! str || ! *str)
+            return str;
+      for (p1 = str, p2 = str + strlen(str) - 1; p2 > p1; ++p1, --p2)
+      {
+            *p1 ^= *p2;
+            *p2 ^= *p1;
+            *p1 ^= *p2;
+      }
+      return str;
+}
+

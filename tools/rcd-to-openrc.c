@@ -10,7 +10,7 @@ int convert(char* data, long size); /* main thread during the conversion of the 
 int write(char outputloc[], char* data); /* a small function to write to a file */
 int delete(long a, long b, char* data); /* a function that deletes the section from a to b in data. one of the functions called by convert */
 int extract(char* pattern, char* delim, char* data, char* extract); /* a function which extracts the value found after pattern and before delim from data and saves it to extract. one of the functions called by convert */
-int insert(char insert[], long pos, char* data); /* this function inserts insert at pos in data. one of the functions called by convert */
+int insert(char* insert, long pos, char* data); /* this function inserts insert at pos in data. one of the functions called by convert */
 int replace(char target[], char phrase[], char* data); /* a function to replace target with phrase inside data. one of the functions called by convert */
 int main();
 
@@ -97,6 +97,12 @@ int convert(char* data, long size){
 	free(pattern);
 	free(delim);
 	free(extractd);*/
+	/*char* insertn;
+	insertn = malloc(sizeof(char)*10);
+	char temp[] = "\n\nTest\n\n";
+	strcpy(insertn,temp);
+	insert(insertn,100,data);
+	free(insertn);*/
 	return(0);
 }	
 
@@ -126,6 +132,20 @@ int extract(char* pattern, char* delim, char* data, char* extract){ //Tested. Wo
 	long l;
 	for(l = psz; result1[l]!= delim[0]; l++) extract[l-psz] = result1[l];
 	printf("%s",extract);
+	return(0);
+}
+
+int insert(char* insert, long pos, char* data){ //Tested. Works.
+	char* buffer;
+	buffer = malloc(sizeof(char)*strlen(data));
+	long insize = strlen(insert);
+	long dsize = strlen(data);
+	long l;
+	for(l = 0; l < pos; l++) buffer[l] = data[l];
+	for(l = 0; l < insize; l++) buffer[pos + l] = insert[l];
+	for(l = pos; l <= dsize; l++) buffer[l+insize] = data[l];
+	strcpy(data,buffer);
+	free(buffer);
 	return(0);
 }
 

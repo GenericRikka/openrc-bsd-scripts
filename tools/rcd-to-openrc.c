@@ -103,6 +103,19 @@ int convert(char* data, long size){
 	strcpy(insertn,temp);
 	insert(insertn,100,data);
 	free(insertn);*/
+	
+	//This part uses replace to fix description in script
+	/*char* target;
+	char* phrase;
+	target = malloc(sizeof(char)*20);
+	phrase = malloc(sizeof(char)*40);
+	char tmp1[] = "desc=\"";
+	char tmp2[] = "description=\"";
+	strcpy(target,tmp1);
+	strcpy(phrase,tmp2);
+	replace(target,phrase,data);
+	free(target);
+	free(phrase);*/
 	return(0);
 }	
 
@@ -146,6 +159,17 @@ int insert(char* insert, long pos, char* data){ //Tested. Works.
 	for(l = pos; l <= dsize; l++) buffer[l+insize] = data[l];
 	strcpy(data,buffer);
 	free(buffer);
+	return(0);
+}
+
+int replace(char target[], char phrase[], char* data){ //Tested. Works.
+	char* pos;
+	long tsize = strlen(target);
+	pos = strstr(data,target);
+	long l;
+	delete(0,tsize,pos);
+	insert(phrase,0,pos);
+	printf("%s",data);
 	return(0);
 }
 

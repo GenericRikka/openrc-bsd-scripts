@@ -50,10 +50,10 @@ int main(){
 	printf("\e[0;35m                                 K K  A     A    V V   E      X X\n");
 	printf("\e[0;35m                                 K  K A     A     V    EEEEE X   X\n\n\n\e[0m");
 
-	printf("Please enter the path to the rc.d script you want to translate:\n");
+	printf("\e[1;31mPlease enter the path to the rc.d script you want to translate:\e[0;31m\n");
 	scanf("%24[^\n]", &inlocation);
 	getchar();
-	printf("Now, please enter a path for the output file:\n");
+	printf("\e[1;32mNow, please enter a path for the output file:\e[0;32m\n");
 	scanf("%24[^\n]", &outlocation);
 	myread(inlocation, outlocation);
 	printf(" Done!");
@@ -148,8 +148,8 @@ void convert(char* data, size_t size){
 void test_progress(){
 	size_t num_secs = 0, max_secs = 50;
 	printf("%s\n", "");
-	char title1[] = "/etc/rc.d/netif";
-	char title2[] = "/etc/init.d/netif";
+	char title1[] = "\e[0;31m" "/etc/rc.d/netif" "\e[0;0m";
+	char title2[] = "\e[0;32m" "/etc/init.d/netif" "\e[0;0m";
 	int spinstore;
 	spinstore = 0;
 	for ( ; num_secs < max_secs; num_secs++){
@@ -159,8 +159,8 @@ void test_progress(){
 }
 
 void print_progress(char *title1, char *title2, int count, int max, int *spinstore){ //Remember to convert longs that hold array counts into size_t
-	const char prefix[] = " [";
-	const char suffix[] = "]     ";
+	const char prefix[] = " [\e[0;35m";
+	const char suffix[] = "\e[0;0m]     ";
 	const size_t prefix_length = sizeof(prefix) - 1;
 	const size_t suffix_length = sizeof(suffix) - 1;
 	char *buffer = malloc(max + prefix_length + suffix_length + 1);
@@ -172,11 +172,11 @@ void print_progress(char *title1, char *title2, int count, int max, int *spinsto
 	strcpy(&buffer[prefix_length + i], suffix);
 	
 	char *spin[5];
-	spin[0] = "-->  -->  ";
-	spin[1] = " -->  --> ";
-	spin[2] = "  -->  -->";
-	spin[3] = ">  -->  --";
-	spin[4] = "->  -->  -";
+	spin[0] = "\e[0;35m-->  -->  \e[0;0m";
+	spin[1] = "\e[0;35m -->  --> \e[0;0m";
+	spin[2] = "\e[0;35m  -->  -->\e[0;0m";
+	spin[3] = "\e[0;35m>  -->  --\e[0;0m";
+	spin[4] = "\e[0;35m->  -->  -\e[0;0m";
 	int spinmax = 4;
 	
 	printf("\r\b\b\b\r%s\b\b\b\b\b Converting: %s [%s] %s", buffer, title1, spin[*spinstore], title2);

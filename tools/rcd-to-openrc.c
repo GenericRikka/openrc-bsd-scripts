@@ -35,25 +35,25 @@ int main(){
 	char inlocation[1000];
 	char outlocation[1000];
 
-	printf("\e[0;31m╔═══╗  ╔════╗    ╔══╗   \e[0;35m       ═══╦═══ ╔════╗       \e[0;32m ╔════╗ ╔════╗ ╔════ ╔╗   ║ ╔═══╗ ╔════╗\n");
-	printf("\e[0;31m║   ║  ║         ║  ╚╗  \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ║    ║ ║     ║╚╗  ║ ║   ║ ║\n");
-	printf("\e[0;31m╠═╦═╝  ║         ║   ╚╗ \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ╠════╝ ╠═══  ║ ╚╗ ║ ╠═╦═╝ ║\n");
-	printf("\e[0;31m║ ╚╗   ║         ║   ╔╝ \e[0;35m ════     ║    ║    ║  ════ \e[0;32m ║    ║ ║      ║     ║  ║ ║ ║ ╚╗  ║\n");
-	printf("\e[0;31m║  ╚╗  ║      ╔╗ ║  ╔╝  \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ║      ║     ║  ╚╗║ ║  ╚╗ ║\n");
-	printf("\e[0;31m║   ╚  ╚════╝ ╚╝ ╚══╝   \e[0;35m          ║    ╚════╝       \e[0;32m ╚════╝ ║      ╚════ ║   ╚╝ ║   ╚ ╚════╝\n");
+	printf("\e[0;31m ╔═══╗  ╔════╗    ╔══╗   \e[0;35m       ═══╦═══ ╔════╗       \e[0;32m ╔════╗ ╔════╗ ╔════ ╔╗   ║ ╔═══╗ ╔════╗\n");
+	printf("\e[0;31m ║   ║  ║         ║  ╚╗  \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ║    ║ ║     ║╚╗  ║ ║   ║ ║\n");
+	printf("\e[0;31m ╠═╦═╝  ║         ║   ╚╗ \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ╠════╝ ╠═══  ║ ╚╗ ║ ╠═╦═╝ ║\n");
+	printf("\e[0;31m ║ ╚╗   ║         ║   ╔╝ \e[0;35m ════     ║    ║    ║  ════ \e[0;32m ║    ║ ║      ║     ║  ║ ║ ║ ╚╗  ║\n");
+	printf("\e[0;31m ║  ╚╗  ║      ╔╗ ║  ╔╝  \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ║      ║     ║  ╚╗║ ║  ╚╗ ║\n");
+	printf("\e[0;31m ║   ╚  ╚════╝ ╚╝ ╚══╝   \e[0;35m          ║    ╚════╝       \e[0;32m ╚════╝ ║      ╚════ ║   ╚╝ ║   ╚ ╚════╝\n");
 	printf("\n");
-	printf("\e[0;35m                                               B    Y\n");
+	printf("\e[2;35m B    Y\n");
 	printf("\n");
-	printf("\e[0;35m                                 K  K    A   V     V EEEEE X   X\n");
-	printf("\e[0;35m                                 K K    A A  V     V E      X X\n");
-	printf("\e[0;35m                                 KK    AAAAA  V   V  EEE     X\n");
-	printf("\e[0;35m                                 K K  A     A  V V   E      X X\n");
-	printf("\e[0;35m                                 K  K A     A   V    EEEEE X   X\n\n\n\e[0m");
+	printf("\e[3;35m K  K    A   V     V EEEEE X   X\n");
+	printf("\e[3;35m K K    A A  V     V E      X X\n");
+	printf("\e[3;35m KK    AAAAA  V   V  EEE     X\n");
+	printf("\e[3;35m K K  A     A  V V   E      X X\n");
+	printf("\e[3;35m K  K A     A   V    EEEEE X   X\n\n\n\e[0m");
 
-	printf("\e[1;31mPlease enter the path to the rc.d script you want to translate:\e[0;31m\n");
+	printf("\e[1;31m Please enter the path to the rc.d script you want to translate:\e[0;31m\n");
 	scanf("%24[^\n]", &inlocation);
 	getchar();
-	printf("\e[1;32mNow, please enter a path for the output file:\e[0;32m\n");
+	printf("\e[1;32m Now, please enter a path for the output file:\e[0;32m\n");
 	scanf("%24[^\n]", &outlocation);
 	printf("\n");
 	myread(inlocation, outlocation);
@@ -147,7 +147,7 @@ void convert(char* data, size_t size){
 }
 
 void test_progress(){
-	size_t num_secs = 0, max_secs = 50;
+	size_t num_secs = 0, max_secs = 90;
 	printf("%s\n", "");
 	char title1[] = "\e[0;31m" "/etc/rc.d/netif" "\e[0;0m";
 	char title2[] = "\e[0;32m" "/etc/init.d/netif" "\e[0;0m";
@@ -182,7 +182,7 @@ void print_progress(char *title1, char *title2, char *operation, int count, int 
 	int spinmax = 4;
 	
 	printf("\e[2F");
-	printf("%s\n%s\n %s [%s] %s", buffer, operation, title1, spin[*spinstore], title2);
+	printf("%s\n %s\n %s [%s] %s", buffer, operation, title1, spin[*spinstore], title2);
 	fflush(stdout);
 	free(buffer);
 	if(*spinstore == spinmax) *spinstore = 0;

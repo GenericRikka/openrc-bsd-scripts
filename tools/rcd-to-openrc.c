@@ -8,7 +8,7 @@
 #define MAX_ROWS 1000 /* maximum of rows to be expected in the script */
 
 void myread(char inputloc[], char outputloc[]); /* a small function to read from a file and then call another function with read data as argument */
-void convert(char* data, size_t size); /* main thread during the conversion of the script. It calls sub functions to modify different parts */
+void convert(char* data, size_t size, char inloc[], char outloc[]); /* main thread during the conversion of the script. It calls sub functions to modify different parts */
 void mywrite(char outputloc[], char* data); /* a small function to write to a file */
 void delete(size_t a, size_t b, char* data); /* a function that deletes the section from a to b in data. one of the functions called by convert */
 void extract(char* pattern, char* delim, char* data, char* extract); /* a function which extracts the value found after pattern and before delim from data and saves it to extract. one of the functions called by convert */
@@ -16,7 +16,7 @@ void myinsert(char* insert, size_t pos, char* data); /* this function inserts in
 void replace(char target[], char phrase[], char* data); /* a function to replace target with phrase inside data. one of the functions called by convert */
 void cmdextract(char* data, char* extractpre, char* extractpost);
 char* strrev(char* str);
-void print_progress(char *title1, char *title2, char *operation, int count, int max, int *spinstore);
+void print_progress(char *title1, char *title2, char operation[], int count, int max, int *spinstore);
 void test_progress();
 int main();
 
@@ -58,7 +58,7 @@ int main(){
 	printf("\n");
 	myread(inlocation, outlocation);
 	printf(" Done!");
-        //write(outlocation, "test");
+        //mywrite(outlocation, "test");
 	return 0;
 }
 
@@ -83,12 +83,12 @@ void myread(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){ //Tested. 
 	int i;
 	//printf("Read:\n");
 	//for(i = 0; i <= size; i++) printf("%c",data[i]);
-	convert(data, size);
-	//write(outputloc,data);
+	convert(data, size, inputloc, outputloc);
+	mywrite(outputloc,data);
 	free(data);
 }
 
-void convert(char* data, size_t size){ 
+void convert(char* data, size_t size, char inloc[], char outloc[]){ 
 	//int i;
 	//printf("Recieved:\n");
 	//for(i = 0; i <= size; i++) printf("%c",data[i]);
@@ -143,7 +143,33 @@ void convert(char* data, size_t size){
 	free(extractpre);
 	free(extractpost);*/
 
-	test_progress();
+	//test_progress();
+	
+	int spinstore;
+	spinstore = 0;
+	int maxops;
+	maxops = 100;
+	print_progress(inloc, outloc,"Initializing Conversion...", 0, maxops, &spinstore);
+	usleep(50000);
+	print_progress(inloc, outloc,"Replacing Description...", 1, maxops, &spinstore);
+	char desc[] = "desc=\"";
+	char description[] = "description=\"";
+	if(strstr(data,desc)) replace(desc,description,data);
+	print_progress(inloc, outloc,"Replacing Shebang...", 2, maxops, &spinstore);
+	char sheb[] = "#!/bin/sh";
+	char shebng[] = "#!/sbin/openrc-run";
+	if(strstr(data,sheb)) replace(sheb,shebng,data);
+	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore);
+/*	char *provide;
+	char prvd[] = "# PROVIDE ";
+	char nl[] = "\n";
+	if(strstr(prvd,data)){
+	provide = malloc(sizeof(char)*300);
+	extract(prvd,nl,data,provide);
+	}
+	//printf("%s",provide);
+	free(provide); */
+	exit;
 }
 
 void test_progress(){
@@ -160,7 +186,7 @@ void test_progress(){
 	}
 }
 
-void print_progress(char *title1, char *title2, char *operation, int count, int max, int *spinstore){ //Remember to convert longs that hold array counts into size_t
+void print_progress(char *title1, char *title2, char operation[], int count, int max, int *spinstore){
 	const char prefix[] = " [\e[0;35m";
 	const char suffix[] = "\e[0;0m]";
 	const size_t prefix_length = sizeof(prefix) - 1;
@@ -169,7 +195,7 @@ void print_progress(char *title1, char *title2, char *operation, int count, int 
 	size_t i;
 	strcpy(buffer, prefix);
 	for ( i = 0; i < max; i++ ){
-		buffer[prefix_length + i] = i <= count ? '#' : ' '; //Remember to change # to pretty unicode/ascii symbol
+		buffer[prefix_length + i] = i <= count ? '#' : ' '; 
 	}
 	strcpy(&buffer[prefix_length + i], suffix);
 	
@@ -214,7 +240,7 @@ void extract(char* pattern, char* delim, char* data, char* extract){ //Tested. W
 	result1 = strstr(data,pattern);
 	long l;
 	for(l = psz; result1[l]!= delim[0]; l++) extract[l-psz] = result1[l];
-	printf("%s",extract);
+	//printf("%s",extract);
 }
 
 void cmdextract(char* data, char* extractpre, char* extractpost){ //Tested. Works.
@@ -251,7 +277,7 @@ void replace(char target[], char phrase[], char* data){ //Tested. Works.
 	size_t l;
 	delete(0,tsize,pos);
 	myinsert(phrase,0,pos);
-	printf("%s",data);
+	//printf("%s",data);
 }
 
 void mywrite(char outputloc[1000], char* data){ //Tested. Works.

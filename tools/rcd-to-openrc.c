@@ -10,7 +10,7 @@
 void myread(char inputloc[], char outputloc[]); /* a small function to read from a file and then call another function with read data as argument */
 void convert(char* data, size_t size, char inloc[], char outloc[]); /* main thread during the conversion of the script. It calls sub functions to modify different parts */
 void mywrite(char outputloc[], char* data); /* a small function to write to a file */
-void delete(size_t a, size_t b, char* data); /* a function that deletes the section from a to b in data. one of the functions called by convert */
+void delete(size_t a, char* data); /* a function that deletes the section from 0 to a in data. one of the functions called by convert */
 void extract(char* pattern, char* delim, char* data, char* extract); /* a function which extracts the value found after pattern and before delim from data and saves it to extract. one of the functions called by convert */
 void myinsert(char* insert, size_t pos, char* data); /* this function inserts insert at pos in data. one of the functions called by convert */
 void replace(char target[], char phrase[], char* data); /* a function to replace target with phrase inside data. one of the functions called by convert */
@@ -50,6 +50,8 @@ int main(){
 	printf("\e[3;35m K K  A     A  V V   E      X X\n");
 	printf("\e[3;35m K  K A     A   V    EEEEE X   X\n\n\n\e[0m");
 
+	int priv = geteuid();
+	if(priv == 0){
 	printf("\e[1;31m Please enter the path to the rc.d script you want to translate:\e[0;31m\n");
 	scanf("%24[^\n]", &inlocation);
 	getchar();
@@ -60,6 +62,11 @@ int main(){
 	printf(" Done!");
         //mywrite(outlocation, "test");
 	return 0;
+	}
+	else{
+	printf("This binary must be executed by root (usage of doas/sudo is sufficient)\n");
+	return(1);
+	}
 }
 
 void myread(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){ //Tested. Works.
@@ -159,17 +166,26 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	char sheb[] = "#!/bin/sh";
 	char shebng[] = "#!/sbin/openrc-run";
 	if(strstr(data,sheb)) replace(sheb,shebng,data);
-	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore);
-/*	char *provide;
-	char prvd[] = "# PROVIDE ";
-	char nl[] = "\n";
-	if(strstr(prvd,data)){
-	provide = malloc(sizeof(char)*300);
-	extract(prvd,nl,data,provide);
-	}
+	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore); 
+	char *provide;
+	char *pattern; 
+	pattern = "# PROVIDE: ";
+	print_progress(inloc, outloc,"Scanning PROVIDE...              ", 4, maxops, &spinstore);
+	//while(strstr(data,pattern)){
+	size_t patlen = 11;
+	char *extr;
+	char *delim = "\n";
+	printf("before extract\n");
+	extract(pattern,delim,data,extr);
+	printf("after extract\n");
+	strcat(provide,extr);
+	char* del = strstr(data,pattern);
+	size_t exlen = strlen(extr) + 1;
+	size_t len = patlen + exlen;
+	delete(len,del);
+	printf("%s",provide);
+	//}
 	//printf("%s",provide);
-	free(provide); */
-	exit;
 }
 
 void test_progress(){
@@ -216,17 +232,16 @@ void print_progress(char *title1, char *title2, char operation[], int count, int
 	else printf("[ERROR] Illegal spinner state.\n"), fputs("[ERROR] Illegal spinner state.",stderr), perror("Illegal spinner state"), exit;
 }
 
-void delete(size_t a, size_t b, char* data){ //Tested. Works.
+void delete(size_t a, char* data){ 
 	size_t size = strlen(data);
-	size_t d = b - a;
 	char *buffer;
 	buffer = malloc(sizeof(char)*size); 
 	int i;
 	for(i = 0; i < a; i++){
 		buffer[i] = data[i];
 	}
-	for(i = b; i < size; i++){
-		buffer[i - d] = data[i];
+	for(i = a; i < size; i++){
+		buffer[i - a] = data[i];
 	}
 	for(i = 0; i < size+1; i++) data[i] = buffer[i];
 	free(buffer);
@@ -275,7 +290,7 @@ void replace(char target[], char phrase[], char* data){ //Tested. Works.
 	size_t tsize = strlen(target);
 	pos = strstr(data,target);
 	size_t l;
-	delete(0,tsize,pos);
+	delete(tsize,pos);
 	myinsert(phrase,0,pos);
 	//printf("%s",data);
 }

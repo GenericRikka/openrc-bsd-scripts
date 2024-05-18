@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+#
+#
+
+# PROVIDE: SERVERS
+# REQUIRE: mountcritremote sysvipc linux ldconfig savecore watchdogd
+
+#	This is a dummy dependency, for early-start servers relying on
+#	some basic configuration.
+
+name="SERVERS"
+description="This is a dummy dependency, for early-start servers relying on some basic configuration."
+
+depend(){
+	provide SERVERS
+	need localmount
+	need sysvipc
+	need linux
+	need ldconfig
+	need savecore
+	need watchdogd
+}
+
+start(){
+	#Do nothing, be a dummy
+}

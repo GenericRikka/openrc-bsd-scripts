@@ -19,6 +19,8 @@ depend(){
 	#need cleanvar
 	need var
 	need tmp
+	want zfs
+	want zpool
 }
 
 start(){

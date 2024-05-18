@@ -1,0 +1,41 @@
+#!/sbin/openrc-run
+#
+#
+
+# PROVIDE: kldxref
+# REQUIRE: mountcritlocal
+# BEFORE:  netif
+# KEYWORD: nojail
+
+. /etc/rc.subr
+. /etc/netrc.conf
+
+name="kldxref"
+description="Generate hints for the kernel loader"
+
+depend(){
+	provide kldxrev
+	need localmount
+	before netif
+}
+
+stop(){
+#Nothing to stop
+}
+
+start() {
+	if [ -n "$kldxref_module_path" ]; then
+		MODULE_PATHS="$kldxref_module_path"
+	else
+		MODULE_PATHS=`sysctl -n kern.module_path`
+	fi
+	IFS=';'
+	for MODULE_DIR in $MODULE_PATHS; do
+		if checkyesno kldxref_clobber ||
+		    [ ! -f "$MODULE_DIR/linker.hints" ] &&
+		    [ `echo ${MODULE_DIR}/*.ko` != "${MODULE_DIR}/*.ko" ]; then
+			echo "Building $MODULE_DIR/linker.hints"
+			kldxref "$MODULE_DIR"
+		fi
+	done
+}

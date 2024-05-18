@@ -1,0 +1,29 @@
+#!/sbin/openrc-run
+#
+#
+
+# PROVIDE: sysvipc
+# REQUIRE: kldxref
+# KEYWORD: nojail
+
+. /etc/rc.subr
+. /etc/netrc.conf
+
+name="sysvipc"
+description="Load SysV IPC modules"
+
+depend(){
+	provide sysvipc
+	need kldxref
+}
+
+stop(){
+	#Nothing to stop
+}
+
+start()
+{
+	load_kld sysvmsg
+	load_kld sysvsem
+	load_kld sysvshm
+}

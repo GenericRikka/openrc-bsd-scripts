@@ -28,7 +28,7 @@ int main();
 !!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
 !!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-
+// !!! Remember to update all mallocs to callocs, since we need initialized memory, or else it will completely break our script
 
 int main(){
 	/* Do some tasks */
@@ -167,25 +167,44 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	char shebng[] = "#!/sbin/openrc-run";
 	if(strstr(data,sheb)) replace(sheb,shebng,data);
 	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore); 
-	char *provide;
-	char *pattern; 
-	pattern = "# PROVIDE: ";
+	char *provide = malloc(sizeof(char)*1000);
+	char pattern[12];
+	strcpy(pattern, "# PROVIDE: ");
 	print_progress(inloc, outloc,"Scanning PROVIDE...              ", 4, maxops, &spinstore);
-	//while(strstr(data,pattern)){
-	size_t patlen = 11;
-	char *extr;
-	char *delim = "\n";
-	printf("before extract\n");
-	extract(pattern,delim,data,extr);
-	printf("after extract\n");
-	strcat(provide,extr);
-	char* del = strstr(data,pattern);
-	size_t exlen = strlen(extr) + 1;
-	size_t len = patlen + exlen;
-	delete(len,del);
-	printf("%s",provide);
-	//}
-	//printf("%s",provide);
+	while(strstr(data,pattern)){
+		size_t patlen = strlen(pattern);
+		char *extr = malloc(sizeof(char)*1000);
+		char *delim = "\n";
+		extract(pattern,delim,data,extr); 
+		strcat(provide,extr);
+		char* del = strstr(data,pattern);
+		size_t exlen = strlen(extr);
+		size_t len = patlen + exlen;
+		delete(len,del);
+		free(extr);
+	}
+	char *require = malloc(sizeof(char)*1000);
+	strcpy(pattern, "# REQUIRE: ");
+	print_progress(inloc, outloc,"Scanning REQUIRE...             ", 5, maxops, &spinstore);
+	while(strstr(data,pattern)){
+		size_t patlen = strlen(pattern) - 1;
+		char *delim = "\n";
+		char *extr = calloc(1000, sizeof(char));
+		extract(pattern,delim,data,extr);
+		strcat(extr,";");
+		strcat(require,extr);
+		char* del = strstr(data,pattern);
+		size_t exlen = strlen(extr);
+		size_t len = patlen + exlen;
+		delete(len,del);
+		free(extr);
+	}
+	
+	printf("Provide: \n%s",provide);
+	printf("Require: \n%s",require);
+	printf("\n\nProblem is thought to be uninitialized RAM allocation. Try chaning malloc to calloc.");
+	free(provide);
+	free(require);
 }
 
 void test_progress(){
@@ -247,15 +266,17 @@ void delete(size_t a, char* data){
 	free(buffer);
 }
 
-void extract(char* pattern, char* delim, char* data, char* extract){ //Tested. Works.
+void extract(char* pattern, char* delim, char* data, char* extr){ //Tested. Works.i
 	size_t psz = strlen(pattern);
 	size_t desz = strlen(delim);
 	size_t dasz = strlen(data);
 	char *result1;
 	result1 = strstr(data,pattern);
 	long l;
-	for(l = psz; result1[l]!= delim[0]; l++) extract[l-psz] = result1[l];
-	//printf("%s",extract);
+	l = psz;
+	for(l; result1[l] != delim[0]; l++){
+		extr[l - psz] = result1[l];
+	}
 }
 
 void cmdextract(char* data, char* extractpre, char* extractpost){ //Tested. Works.

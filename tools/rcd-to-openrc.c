@@ -81,8 +81,8 @@ void myread(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){ //Tested. 
 	size = ftell(file);
 	rewind(file);
 
-	data = malloc(1 * size + 1); 
-	if(!data) fclose(file),fputs("[ERROR] Failed to allocate memory. Bailing out.",stderr),perror("malloc fail"),printf("[ERROR] Failed to allocate memory.\n"),exit;
+	data = calloc(size + 1, sizeof(char)); 
+	if(!data) fclose(file),fputs("[ERROR] Failed to allocate memory. Bailing out.",stderr),perror("calloc fail"),printf("[ERROR] Failed to allocate memory.\n"),exit;
 	if(1 != fread(data, size, 1, file))
 		fclose(file),free(data),fputs("[ERROR] Read Operation from file failed.",stderr),perror("read fail"),printf("[ERROR] Read operation failed\n"),exit;
 	fread(data, size, 1, file);
@@ -167,13 +167,13 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	char shebng[] = "#!/sbin/openrc-run";
 	if(strstr(data,sheb)) replace(sheb,shebng,data);
 	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore); 
-	char *provide = malloc(sizeof(char)*1000);
+	char *provide = calloc(1000,sizeof(char));
 	char pattern[12];
 	strcpy(pattern, "# PROVIDE: ");
 	print_progress(inloc, outloc,"Scanning PROVIDE...              ", 4, maxops, &spinstore);
 	while(strstr(data,pattern)){
 		size_t patlen = strlen(pattern);
-		char *extr = malloc(sizeof(char)*1000);
+		char *extr = calloc(1000,sizeof(char));
 		char *delim = "\n";
 		extract(pattern,delim,data,extr); 
 		strcat(provide,extr);
@@ -183,7 +183,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		delete(len,del);
 		free(extr);
 	}
-	char *require = malloc(sizeof(char)*1000);
+	char *require = calloc(1000,sizeof(char));
 	strcpy(pattern, "# REQUIRE: ");
 	print_progress(inloc, outloc,"Scanning REQUIRE...             ", 5, maxops, &spinstore);
 	while(strstr(data,pattern)){
@@ -202,7 +202,6 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	
 	printf("Provide: \n%s",provide);
 	printf("Require: \n%s",require);
-	printf("\n\nProblem is thought to be uninitialized RAM allocation. Try chaning malloc to calloc.");
 	free(provide);
 	free(require);
 }
@@ -226,7 +225,7 @@ void print_progress(char *title1, char *title2, char operation[], int count, int
 	const char suffix[] = "\e[0;0m]";
 	const size_t prefix_length = sizeof(prefix) - 1;
 	const size_t suffix_length = sizeof(suffix) - 1;
-	char *buffer = malloc(max + prefix_length + suffix_length + 1);
+	char *buffer = calloc(max + prefix_length + suffix_length + 1,sizeof(char));
 	size_t i;
 	strcpy(buffer, prefix);
 	for ( i = 0; i < max; i++ ){
@@ -254,7 +253,7 @@ void print_progress(char *title1, char *title2, char operation[], int count, int
 void delete(size_t a, char* data){ 
 	size_t size = strlen(data);
 	char *buffer;
-	buffer = malloc(sizeof(char)*size); 
+	buffer = calloc(size,sizeof(char)); 
 	int i;
 	for(i = 0; i < a; i++){
 		buffer[i] = data[i];
@@ -295,7 +294,7 @@ void cmdextract(char* data, char* extractpre, char* extractpost){ //Tested. Work
 
 void myinsert(char* insert, size_t pos, char* data){ //Tested. Works.
 	char* buffer;
-	buffer = malloc(sizeof(char)*strlen(data));
+	buffer = calloc(strlen(data),sizeof(char));
 	size_t insize = strlen(insert);
 	size_t dsize = strlen(data);
 	size_t l;

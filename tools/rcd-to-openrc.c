@@ -166,13 +166,13 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	char shebng[] = "#!/sbin/openrc-run";
 	if(strstr(data,sheb)) replace(sheb,shebng,data);
 	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore); 
-	char *provide = calloc(1000,sizeof(char));
+	char *provide = calloc(200,sizeof(char));
 	char pattern[12];
 	strcpy(pattern, "# PROVIDE: ");
 	print_progress(inloc, outloc,"Scanning PROVIDE...              ", 4, maxops, &spinstore);
 	while(strstr(data,pattern)){
 		size_t patlen = strlen(pattern);
-		char *extr = calloc(1000,sizeof(char));
+		char *extr = calloc(200,sizeof(char));
 		char *delim = "\n";
 		extract(pattern,delim,data,extr);
 		strcat(extr,";"); // This is inserted into the array, to have a delimiter between scanned rows
@@ -184,13 +184,13 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		free(extr);
 	}
 	strcat(provide,"\0"); // This marks the end of the array.
-	char *require = calloc(1000,sizeof(char));
+	char *require = calloc(200,sizeof(char));
 	strcpy(pattern, "# REQUIRE: ");
 	print_progress(inloc, outloc,"Scanning REQUIRE...             ", 5, maxops, &spinstore);
 	while(strstr(data,pattern)){
 		size_t patlen = strlen(pattern) - 1;
 		char *delim = "\n";
-		char *extr = calloc(1000, sizeof(char));
+		char *extr = calloc(200, sizeof(char));
 		extract(pattern,delim,data,extr);
 		strcat(extr,";");
 		strcat(require,extr);
@@ -201,14 +201,14 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		free(extr);
 	}
 	strcat(require,"\0");
-	char *before = calloc(1000,sizeof(char));
+	char *before = calloc(200,sizeof(char));
 	memset(pattern,0,12);
 	strcpy(pattern,"# BEFORE: ");
 	print_progress(inloc, outloc,"Scanning BEFORE...        ", 6, maxops, &spinstore);
 	while(strstr(data,pattern)){
 		size_t patlen = strlen(pattern) - 1;
 		char *delim = "\n";
-		char *extr = calloc(1000, sizeof(char));
+		char *extr = calloc(200, sizeof(char));
 		extract(pattern,delim,data,extr);
 		strcat(extr,";");
 		strcat(before,extr);
@@ -219,14 +219,14 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		free(extr);
 	}
 	strcat(before,"\0");
-	char *after = calloc(1000,sizeof(char));
+	char *after = calloc(200,sizeof(char));
 	memset(pattern,0,12);
 	strcpy(pattern,"# AFTER: ");
 	print_progress(inloc, outloc,"Scanning AFTER...        ", 7, maxops, &spinstore);
 	while(strstr(data,pattern)){
 		size_t patlen = strlen(pattern) - 1;
 		char *delim = "\n";
-		char *extr = calloc(1000, sizeof(char));
+		char *extr = calloc(200, sizeof(char));
 		extract(pattern,delim,data,extr);
 		strcat(extr,";");
 		strcat(after,extr);
@@ -260,8 +260,9 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	}
 
 	print_progress(inloc, outloc,"Generating depend() function... ", 9, maxops, &spinstore);
-	char *dependm = calloc(5000, sizeof(char));
-	if(dependm == NULL) printf("[ERROR] Allocating memory\n"), exit;// Currently program crashes here
+	printf("%s",data);
+	char *dependm  = calloc(1200, sizeof(char)); // Or rather here, since the printf below is not executed
+	if(!dependm) printf("[ERROR] Allocating memory\n"), exit;// Currently program crashes here
 	printf("After dependm calloc ");
 	strcat(dependm,"depend(){");
 	printf("Before provide check");

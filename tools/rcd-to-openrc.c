@@ -28,7 +28,6 @@ int main();
 !!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
 !!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-// !!! Remember to update all mallocs to callocs, since we need initialized memory, or else it will completely break our script
 
 int main(){
 	/* Do some tasks */
@@ -175,7 +174,8 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		size_t patlen = strlen(pattern);
 		char *extr = calloc(1000,sizeof(char));
 		char *delim = "\n";
-		extract(pattern,delim,data,extr); 
+		extract(pattern,delim,data,extr);
+		strcat(extr,";"); // This is inserted into the array, to have a delimiter between scanned rows
 		strcat(provide,extr);
 		char* del = strstr(data,pattern);
 		size_t exlen = strlen(extr);
@@ -183,6 +183,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		delete(len,del);
 		free(extr);
 	}
+	strcat(provide,"\0"); // This marks the end of the array.
 	char *require = calloc(1000,sizeof(char));
 	strcpy(pattern, "# REQUIRE: ");
 	print_progress(inloc, outloc,"Scanning REQUIRE...             ", 5, maxops, &spinstore);
@@ -199,14 +200,138 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		delete(len,del);
 		free(extr);
 	}
-	
-	printf("Provide: \n%s",provide);
-	printf("Require: \n%s",require);
+	strcat(require,"\0");
+	char *before = calloc(1000,sizeof(char));
+	memset(pattern,0,12);
+	strcpy(pattern,"# BEFORE: ");
+	print_progress(inloc, outloc,"Scanning BEFORE...        ", 6, maxops, &spinstore);
+	while(strstr(data,pattern)){
+		size_t patlen = strlen(pattern) - 1;
+		char *delim = "\n";
+		char *extr = calloc(1000, sizeof(char));
+		extract(pattern,delim,data,extr);
+		strcat(extr,";");
+		strcat(before,extr);
+		char* del = strstr(data,pattern);
+		size_t exlen = strlen(extr);
+		size_t len = patlen + exlen;
+		delete(len,del);
+		free(extr);
+	}
+	strcat(before,"\0");
+	char *after = calloc(1000,sizeof(char));
+	memset(pattern,0,12);
+	strcpy(pattern,"# AFTER: ");
+	print_progress(inloc, outloc,"Scanning AFTER...        ", 7, maxops, &spinstore);
+	while(strstr(data,pattern)){
+		size_t patlen = strlen(pattern) - 1;
+		char *delim = "\n";
+		char *extr = calloc(1000, sizeof(char));
+		extract(pattern,delim,data,extr);
+		strcat(extr,";");
+		strcat(after,extr);
+		char* del = strstr(data,pattern);
+		size_t exlen = strlen(extr);
+		size_t len = patlen + exlen;
+		delete(len,del);
+		free(extr);
+	}
+	strcat(after,"\0");
+
+	/* Alright, rc footer is variable, scanning for \n is necessarry. Detectable, repeatable pattern: load_rc_config & run_rc_command. Remember to rewrite this part */
+	print_progress(inloc, outloc,"Deleteing rc footer...        ", 8, maxops, &spinstore);
+	char del1[] = "load_rc_config";
+	char del2[] = "run_rc_command";
+	char comp;
+	while(strstr(data,del1)){
+		char* delp;
+		delp = strstr(data,del1);
+		size_t f = 0;
+		char delim = '\n';
+		for( f = 0; delp[f] != '\n'; f++);
+		delete(f,delp);
+	}
+	while(strstr(data,del2)){
+		char* delp;
+		delp = strstr(data,del2);
+		size_t f;
+		for( f = 0; delp[f] != '\n'; f++);
+		delete(f,delp);
+	}
+
+	print_progress(inloc, outloc,"Generating depend() function... ", 9, maxops, &spinstore);
+	char *dependm = calloc(5000, sizeof(char));
+	if(dependm == NULL) printf("[ERROR] Allocating memory\n"), exit;// Currently program crashes here
+	printf("After dependm calloc ");
+	strcat(dependm,"depend(){");
+	printf("Before provide check");
+	if(provide[0] != '\0'){
+		int i = 0;
+		while(provide[i] != '\0'){
+			strcat(dependm,"\n\tprovide ");
+			char *tmp;
+			int tc = 0;
+			for( i; provide[i] != ';'; i++){
+				tmp[tc] = provide[i];
+				printf("%d\n",tc);
+				tc = tc + 1;
+			}
+			strcat(dependm,tmp);
+			i = i + 1;
+		}
+	}
+	if(require[0] != '\0'){ // Just realized that the if statement is not needed, since the while loop will activate and deactivate under the same conditions. Remember to remove this later
+		int i = 0;
+		while(require[i] != '\0'){
+			strcat(dependm,"\n\tneed ");
+			char *tmp;
+			int tc = 0;
+			for( i; require[i] != ';'; i++ ){
+				tmp[tc] = require[i];
+				tc = tc + 1;
+			}
+			strcat(dependm,tmp);
+			i = i + 1;
+		}
+	}
+	if(before[0] != '\0'){
+		int i = 0;
+		while(before[i] != '\0'){
+			strcat(dependm,"\n\tbefore ");
+			char *tmp;
+			int tc = 0;
+			for( i; before[i] != ';'; i++ ){
+				tmp[tc] = before[i];
+				tc = tc + 1;
+			}
+			strcat(dependm,tmp);
+			i = i + 1;
+		}
+	}
+	if(after[0] != '\0'){
+		int i = 0;
+		while(after[i] != '\0'){
+			strcat(dependm,"\n\tafter ");
+			char *tmp;
+			int tc = 0;
+			for( i; after[i] != ';'; i++){
+				tmp[tc] = after[i];
+				tc = tc + 1;
+			}
+			strcat(dependm,tmp);
+			i = i + 1;
+		}
+	}
+	strcat(dependm,"\n}");
+	printf("%s",dependm);
+
+	free(dependm);
 	free(provide);
 	free(require);
+	free(before);
 }
 
-void test_progress(){
+void test_progress(){ // A function to test the totally overkill progress-indicator i designed for this utility
 	size_t num_secs = 0, max_secs = 90;
 	printf("%s\n", "");
 	char title1[] = "\e[0;31m" "/etc/rc.d/netif" "\e[0;0m";

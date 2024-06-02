@@ -379,7 +379,7 @@ void print_progress(char *title1, char *title2, char operation[], int count, int
 void delete(size_t a, char* data){ 
 	size_t size = strlen(data);
 	char *buffer;
-	buffer = calloc(size,sizeof(char)); 
+	buffer = calloc(size + 1,sizeof(char)); 
 	int i;
 	for(i = 0; i < a; i++){
 		buffer[i] = data[i];

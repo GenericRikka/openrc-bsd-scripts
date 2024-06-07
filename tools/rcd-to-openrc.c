@@ -422,7 +422,7 @@ void myinsert(char* insert, size_t pos, char* data){ //Tested. Works.
 	char* buffer;
 	size_t insize = strlen(insert);
 	size_t dsize = strlen(data);
-	buffer = calloc(dsize + insize + 1, sizeof(char));
+	buffer = calloc(dsize + insize + 2, sizeof(char));
 	size_t l;
 	for(l = 0; l < pos; l++) buffer[l] = data[l];
 	for(l = 0; l < insize; l++) buffer[pos + l] = insert[l];

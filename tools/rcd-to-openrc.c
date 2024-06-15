@@ -158,12 +158,12 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	print_progress(inloc, outloc,"Initializing Conversion...", 0, maxops, &spinstore);
 	usleep(50000);
 	print_progress(inloc, outloc,"Replacing Description...", 1, maxops, &spinstore);
-	char desc[] = "desc=\"";
-	char description[] = "description=\"";
+	char desc[] = "desc=\"\0";
+	char description[] = "description=\"\0";
 	if(strstr(data,desc)) replace(desc,description,data);
 	print_progress(inloc, outloc,"Replacing Shebang...", 2, maxops, &spinstore);
-	char sheb[] = "#!/bin/sh";
-	char shebng[] = "#!/sbin/openrc-run";
+	char sheb[] = "#!/bin/sh\0";
+	char shebng[] = "#!/sbin/openrc-run\0";
 	if(strstr(data,sheb)) replace(sheb,shebng,data);
 	print_progress(inloc, outloc,"Scanning depend comment...", 3, maxops, &spinstore); 
 	char *provide = calloc(200,sizeof(char));
@@ -261,67 +261,63 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 
 	print_progress(inloc, outloc,"Generating depend() function... ", 9, maxops, &spinstore);
 	printf("%s",data);
-	char *dependm  = calloc(1200, sizeof(char)); // Or rather here, since the printf below is not executed
-	if(!dependm) printf("[ERROR] Allocating memory\n"), exit;// Currently program crashes here
-	printf("After dependm calloc ");
+	char *dependm  = calloc(1000, sizeof(char)); 
+	printf("\nTest\n");
+	if(!dependm) printf("[ERROR] Allocating memory\n"), exit;
+	printf("\nAfter dependm calloc \n");
 	strcat(dependm,"depend(){");
-	printf("Before provide check");
-	if(provide[0] != '\0'){
-		int i = 0;
-		while(provide[i] != '\0'){
-			strcat(dependm,"\n\tprovide ");
-			char *tmp;
-			int tc = 0;
-			for( i; provide[i] != ';'; i++){
-				tmp[tc] = provide[i];
-				printf("%d\n",tc);
-				tc = tc + 1;
-			}
-			strcat(dependm,tmp);
-			i = i + 1;
+	printf("Before provide check\n");
+	int i = 0;
+	while(provide[i] != '\0'){
+		strcat(dependm,"\n\tprovide ");
+		printf("\nAfter strcat1\n"); /* !!!Program crashes after here!!! */
+		char *tmp;
+		int tc = 0;
+		for( i; provide[i] != ';'; i++){
+			tmp[tc] = provide[i];
+			printf("%d\n",tc);
+			tc = tc + 1;
 		}
+		strcat(dependm,tmp);
+		i = i + 1;
+		printf("\nEnd of while\n"); /* !!!Program crashes before here!!! */
 	}
-	if(require[0] != '\0'){ // Just realized that the if statement is not needed, since the while loop will activate and deactivate under the same conditions. Remember to remove this later
-		int i = 0;
-		while(require[i] != '\0'){
-			strcat(dependm,"\n\tneed ");
-			char *tmp;
-			int tc = 0;
-			for( i; require[i] != ';'; i++ ){
-				tmp[tc] = require[i];
-				tc = tc + 1;
-			}
-			strcat(dependm,tmp);
-			i = i + 1;
+	printf("\nAfter provide generation\n");
+	i = 0;
+	while(require[i] != '\0'){
+		strcat(dependm,"\n\tneed ");
+		char *tmp;
+		int tc = 0;
+		for( i; require[i] != ';'; i++ ){
+			tmp[tc] = require[i];
+			tc = tc + 1;
 		}
+		strcat(dependm,tmp);
+		i = i + 1;
 	}
-	if(before[0] != '\0'){
-		int i = 0;
-		while(before[i] != '\0'){
-			strcat(dependm,"\n\tbefore ");
-			char *tmp;
-			int tc = 0;
-			for( i; before[i] != ';'; i++ ){
-				tmp[tc] = before[i];
-				tc = tc + 1;
-			}
-			strcat(dependm,tmp);
-			i = i + 1;
+	i = 0;
+	while(before[i] != '\0'){
+		strcat(dependm,"\n\tbefore ");
+		char *tmp;
+		int tc = 0;
+		for( i; before[i] != ';'; i++ ){
+			tmp[tc] = before[i];
+			tc = tc + 1;
 		}
+		strcat(dependm,tmp);
+		i = i + 1;
 	}
-	if(after[0] != '\0'){
-		int i = 0;
-		while(after[i] != '\0'){
-			strcat(dependm,"\n\tafter ");
-			char *tmp;
-			int tc = 0;
-			for( i; after[i] != ';'; i++){
-				tmp[tc] = after[i];
-				tc = tc + 1;
-			}
-			strcat(dependm,tmp);
-			i = i + 1;
+	i = 0;
+	while(after[i] != '\0'){
+		strcat(dependm,"\n\tafter ");
+		char *tmp;
+		int tc = 0;
+		for( i; after[i] != ';'; i++){
+			tmp[tc] = after[i];
+			tc = tc + 1;
 		}
+		strcat(dependm,tmp);
+		i = i + 1;
 	}
 	strcat(dependm,"\n}");
 	printf("%s",dependm);
@@ -422,7 +418,7 @@ void myinsert(char* insert, size_t pos, char* data){ //Tested. Works.
 	char* buffer;
 	size_t insize = strlen(insert);
 	size_t dsize = strlen(data);
-	buffer = calloc(dsize + insize + 2, sizeof(char));
+	buffer = calloc(dsize + insize + 1, sizeof(char));
 	size_t l;
 	for(l = 0; l < pos; l++) buffer[l] = data[l];
 	for(l = 0; l < insize; l++) buffer[pos + l] = insert[l];

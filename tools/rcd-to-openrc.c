@@ -238,7 +238,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	}
 	strcat(after,"\0");
 
-	/* Alright, rc footer is variable, scanning for \n is necessarry. Detectable, repeatable pattern: load_rc_config & run_rc_command. Remember to rewrite this part */
+	/* Alright, rc footer is variable, scanning for \n is necessarry. Detectable, repeatable pattern: *rc_config & *rc_command. Remember to rewrite this part */
 	print_progress(inloc, outloc,"Deleteing rc footer...        ", 8, maxops, &spinstore);
 	char del1[] = "load_rc_config";
 	char del2[] = "run_rc_command";
@@ -260,18 +260,13 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	}
 
 	print_progress(inloc, outloc,"Generating depend() function... ", 9, maxops, &spinstore);
-	printf("%s",data);
 	char *dependm  = calloc(1000, sizeof(char)); 
-	printf("\nTest\n");
 	if(!dependm) printf("[ERROR] Allocating memory\n"), exit;
-	printf("\nAfter dependm calloc \n");
 	strcat(dependm,"depend(){");
-	printf("Before provide check\n");
 	int i = 0;
 	while(provide[i] != '\0'){
 		strcat(dependm,"\n\tprovide ");
-		printf("\nAfter strcat1\n"); /* !!!Program crashes after here!!! */
-		char *tmp;
+		char tmp[200];
 		int tc = 0;
 		for( i; provide[i] != ';'; i++){
 			tmp[tc] = provide[i];
@@ -280,13 +275,11 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		}
 		strcat(dependm,tmp);
 		i = i + 1;
-		printf("\nEnd of while\n"); /* !!!Program crashes before here!!! */
 	}
-	printf("\nAfter provide generation\n");
 	i = 0;
 	while(require[i] != '\0'){
 		strcat(dependm,"\n\tneed ");
-		char *tmp;
+		char tmp[200];
 		int tc = 0;
 		for( i; require[i] != ';'; i++ ){
 			tmp[tc] = require[i];
@@ -298,7 +291,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	i = 0;
 	while(before[i] != '\0'){
 		strcat(dependm,"\n\tbefore ");
-		char *tmp;
+		char tmp[200];
 		int tc = 0;
 		for( i; before[i] != ';'; i++ ){
 			tmp[tc] = before[i];
@@ -310,7 +303,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	i = 0;
 	while(after[i] != '\0'){
 		strcat(dependm,"\n\tafter ");
-		char *tmp;
+		char tmp[200];
 		int tc = 0;
 		for( i; after[i] != ';'; i++){
 			tmp[tc] = after[i];
@@ -427,7 +420,7 @@ void myinsert(char* insert, size_t pos, char* data){ //Tested. Works.
 	free(buffer);
 }
 
-void replace(char target[], char phrase[], char* data){ //Tested. Works.
+void replace(char target[], char phrase[], char* data){ //Tested. Works. !!!!Might be responsible for an I/O Trap
 	char* pos;
 	size_t tsize = strlen(target);
 	pos = strstr(data,target);

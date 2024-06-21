@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #define FPATH_LIMIT 500 /* maximum length for file paths */
 #define MAX_ROWS 1000 /* maximum of rows to be expected in the script */
@@ -29,11 +30,8 @@ int main();
 !!!!!    THIS PROGRAM CURRENTLY CONTAINS MEMORY LEAKS, I STRONGLY ADVISE NOT TO RUN IT      !!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
-int main(){
-	/* Do some tasks */
-	char inlocation[1000];
-	char outlocation[1000];
-
+int main(int argc, char *argv[]){
+	
 	printf("\e[0;31m ╔═══╗  ╔════╗    ╔══╗   \e[0;35m       ═══╦═══ ╔════╗       \e[0;32m ╔════╗ ╔════╗ ╔════ ╔╗   ║ ╔═══╗ ╔════╗\n");
 	printf("\e[0;31m ║   ║  ║         ║  ╚╗  \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ║    ║ ║     ║╚╗  ║ ║   ║ ║\n");
 	printf("\e[0;31m ╠═╦═╝  ║         ║   ╚╗ \e[0;35m          ║    ║    ║       \e[0;32m ║    ║ ╠════╝ ╠═══  ║ ╚╗ ║ ╠═╦═╝ ║\n");
@@ -48,24 +46,66 @@ int main(){
 	printf("\e[3;35m KK    AAAAA  V   V  EEE     X\n");
 	printf("\e[3;35m K K  A     A  V V   E      X X\n");
 	printf("\e[3;35m K  K A     A   V    EEEEE X   X\n\n\n\e[0m");
-
+	
+	char inlocation[1000];
+	char outlocation[1000];
 	int priv = geteuid();
 	if(priv == 0){
+		printf("[WARNING] Elevated Privileges detected. Setting a System File as output location, will overwrite it. Be carefull!\n\n\n");
+	}
+	else{
+		printf("[NOTE] Running with lowered Privileges. Program will not be able to overwrite System Files. Consider usage of doas, or sudo if you want to overwrite System Files.\n\n\n");
+	}
+	if(argc == 1){
 	printf("\e[1;31m Please enter the path to the rc.d script you want to translate:\e[0;31m\n");
 	scanf("%24[^\n]", &inlocation);
 	getchar();
-	printf("\e[1;32m Now, please enter a path for the output file:\e[0;32m\n");
+	} else{
+		char *tmp;
+		tmp = argv[1];
+		long l = 0;
+		for(l;tmp[l] != '\0';l++){
+			inlocation[l] = tmp[l];
+		}
+	}
+	if(argc == 2 || argc == 1){
+	printf("\e[1;32m Please enter a path for the output file:\e[0;32m\n");
 	scanf("%24[^\n]", &outlocation);
 	printf("\n");
+	} else if(argc == 2){
+		char *tmp;
+		tmp = argv[2];
+		long l = 0;
+		for(l;tmp[l] != '\0';l++){
+			outlocation[l] = tmp[l];
+		}
+	}
+	if(argc >= 4) printf("[ERROR] Too many Arguments given!\n"), fputs("[ERROR] Too many Arguments!\n",stderr),perror("ArgOverflow"),exit(-1);
+	if (access(inlocation, F_OK) == 0) {
+ 		// file exists
+	} else {
+    		// file doesn't exist
+		printf("[ERROR] Input File does not exist. Exiting.\n"),fputs("[ERROR] Input File nonexistent. Exiting.\n",stderr),perror("Invalid inloc"),exit(-1);
+	}
+	if (access(outlocation, F_OK) == 0) {
+    		// file exists
+		printf("[WARNING] Output File exists. Are you sure you want to overwrite %s? [y/n]\n",outlocation);
+		char yn;
+		scanf("%c", yn);
+		if(yn == 'y' || yn == 'Y'){
+			// Yay. Continuting.
+		} else if(yn == 'n' || yn == 'N'){
+			printf("Aborted by User.\n"),fputs("Aborted by User.\n",stderr),perror("Aborted"),exit(1);
+		} else{
+			printf("Invalid input...\n"),fputs("User misused form. Terminating...\n",stderr),perror("OxyMoron"),exit(-420);
+		}
+	} else {
+    		// file doesn't exist
+	}
 	myread(inlocation, outlocation);
 	printf(" Done!");
         //mywrite(outlocation, "test");
 	return 0;
-	}
-	else{
-	printf("This binary must be executed by root (usage of doas/sudo is sufficient)\n");
-	return(1);
-	}
 }
 
 void myread(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){ //Tested. Works.
@@ -75,15 +115,15 @@ void myread(char inputloc[FPATH_LIMIT], char outputloc[FPATH_LIMIT]){ //Tested. 
 
 	//printf("Read initialized.");
 	file = fopen(inputloc, "rb");
-	if(! file) fputs("[ERROR] Unable to open file.",stderr),perror(inputloc),printf("Unable to open file.\n"),exit;
+	if(! file) fputs("[ERROR] Unable to open file.\n",stderr),perror(inputloc),printf("Unable to open file.\n"),exit;
 	fseek(file, 0L, SEEK_END);
 	size = ftell(file);
 	rewind(file);
 
 	data = calloc(size + 1, sizeof(char)); 
-	if(!data) fclose(file),fputs("[ERROR] Failed to allocate memory. Bailing out.",stderr),perror("calloc fail"),printf("[ERROR] Failed to allocate memory.\n"),exit;
+	if(!data) fclose(file),fputs("[ERROR] Failed to allocate memory. Bailing out.\n",stderr),perror("calloc fail"),printf("[ERROR] Failed to allocate memory.\n"),exit;
 	if(1 != fread(data, size, 1, file))
-		fclose(file),free(data),fputs("[ERROR] Read Operation from file failed.",stderr),perror("read fail"),printf("[ERROR] Read operation failed\n"),exit;
+		fclose(file),free(data),fputs("[ERROR] Read Operation from file failed.\n",stderr),perror("read fail"),printf("[ERROR] Read operation failed\n"),exit;
 	fread(data, size, 1, file);
 	fclose(file);
 	int i;
@@ -191,6 +231,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		size_t patlen = strlen(pattern) - 1;
 		char *delim = "\n";
 		char *extr = calloc(200, sizeof(char));
+		memset(extr,0,200);
 		extract(pattern,delim,data,extr);
 		strcat(extr,";");
 		strcat(require,extr);
@@ -267,10 +308,10 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	while(provide[i] != '\0'){
 		strcat(dependm,"\n\tprovide ");
 		char tmp[200];
+		memset(tmp,0,200*sizeof(char));
 		int tc = 0;
 		for( i; provide[i] != ';'; i++){
 			tmp[tc] = provide[i];
-			printf("%d\n",tc);
 			tc = tc + 1;
 		}
 		strcat(dependm,tmp);
@@ -280,6 +321,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	while(require[i] != '\0'){
 		strcat(dependm,"\n\tneed ");
 		char tmp[200];
+		memset(tmp,0,200*sizeof(char));
 		int tc = 0;
 		for( i; require[i] != ';'; i++ ){
 			tmp[tc] = require[i];
@@ -292,6 +334,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	while(before[i] != '\0'){
 		strcat(dependm,"\n\tbefore ");
 		char tmp[200];
+		memset(tmp,0,200*sizeof(char));
 		int tc = 0;
 		for( i; before[i] != ';'; i++ ){
 			tmp[tc] = before[i];
@@ -304,6 +347,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 	while(after[i] != '\0'){
 		strcat(dependm,"\n\tafter ");
 		char tmp[200];
+		memset(tmp,0,200*sizeof(char));
 		int tc = 0;
 		for( i; after[i] != ';'; i++){
 			tmp[tc] = after[i];
@@ -313,7 +357,7 @@ void convert(char* data, size_t size, char inloc[], char outloc[]){
 		i = i + 1;
 	}
 	strcat(dependm,"\n}");
-	printf("%s",dependm);
+	printf("%s\n",dependm);
 
 	free(dependm);
 	free(provide);
@@ -362,7 +406,7 @@ void print_progress(char *title1, char *title2, char operation[], int count, int
 	free(buffer);
 	if(*spinstore == spinmax) *spinstore = 0;
 	else if(*spinstore < spinmax && *spinstore >= 0) *spinstore = *spinstore + 1;
-	else printf("[ERROR] Illegal spinner state.\n"), fputs("[ERROR] Illegal spinner state.",stderr), perror("Illegal spinner state"), exit;
+	else printf("[ERROR] Illegal spinner state.\n"), fputs("[ERROR] Illegal spinner state.\n",stderr), perror("Illegal spinner state"), exit;
 }
 
 void delete(size_t a, char* data){ 
@@ -420,7 +464,7 @@ void myinsert(char* insert, size_t pos, char* data){ //Tested. Works.
 	free(buffer);
 }
 
-void replace(char target[], char phrase[], char* data){ //Tested. Works. !!!!Might be responsible for an I/O Trap
+void replace(char target[], char phrase[], char* data){ //Tested. Works. 
 	char* pos;
 	size_t tsize = strlen(target);
 	pos = strstr(data,target);
@@ -430,11 +474,13 @@ void replace(char target[], char phrase[], char* data){ //Tested. Works. !!!!Mig
 	//printf("%s",data);
 }
 
-void mywrite(char outputloc[1000], char* data){ //Tested. Works.
+void mywrite(char outputloc[], char* data){ //Tested. Works.
 	FILE *fptr;
 	fptr = fopen(outputloc, "w");
 	fprintf(fptr, data);
 	fclose(fptr);
+	mode_t perm = 755;
+	chmod(outputloc,perm);
 }
 
 char* strrev(char* str) //Reverses a string
